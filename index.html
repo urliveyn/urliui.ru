@@ -1,557 +1,326 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <script>
-    const funTitles = ["лап~", "Юрли!", "мф~", "#зкм", "#Ayume", "прр~", "факсквад", "ячсв", "лювлю", "зелёнка ван лав"];
-    const randomTitle = funTitles[Math.floor(Math.random() * funTitles.length)];
-    document.title = `urliui — ${randomTitle}`;
-  </script>
-  <meta name="description" content="Юрли - Ютубер по Майнкрафту, автор многих проектов и приватного сервера Ayume, очень душевный друг и любящий человек!">
-  <meta name="keywords" content="urliui, youtube, minecraft, frontend, дизайн, разработка, portfolio, bluesky, namemc, mc, minecraft, hytale">
-  <meta name="author" content="urliui, Юрли!">
-  <meta name="robots" content="index, follow">
-  <meta property="og:title" content="urliui — лап~">
-  <meta property="og:description" content="Юрли - ютубер, стример, дизайнер, разработчик, фронтенд, бекенд.">
-  <meta property="og:image" content="https://vzge.me/face/1000/urqiui">
-  <meta property="og:url" content="https://urliui.ru">
-  <meta property="og:type" content="website">
-  <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="urliui — лап~">
-  <meta name="twitter:description" content="Привет, я - Юрли! Автор многих проектов, ютубер по майну, да и просто душевный человек :3">
-  <meta name="twitter:image" content="https://vzge.me/face/1000/urqiui">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-  <script src="https://cdn.jsdelivr.net/npm/tsparticles@2.12.0/tsparticles.bundle.min.js"></script>
-  <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Name - Portfolio</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-    :root {
-      --bg: #0d0d0f;
-      --surface: #141418;
-      --border: #25252d;
-      --text: #e6e6f0;
-      --text-secondary: #a0a0b0;
-      --textus: #d1d7e9;
-      --accent: #6c5ce7;
-      --accentt: #3733ff;
-      --accent-hover: #7d6bff;
-      --radius: 12px;
-    }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            color: #1a1a1a;
+            background: #ffffff;
+            line-height: 1.6;
+        }
 
-    body {
-      background: var(--bg);
-      color: var(--text);
-      font-family: 'Inter', system-ui, sans-serif;
-      font-weight: 400;
-      line-height: 1.6;
-      min-height: 100vh;
-      overflow-x: hidden;
-      position: relative;
-    }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
 
-    #tsparticles {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      z-index: -1;
-      backdrop-filter: blur(1px);
-    }
+        header {
+            padding: 80px 0 60px 0;
+            border-bottom: 1px solid #e5e5e5;
+            margin-bottom: 80px;
+        }
 
-    .container {
-      max-width: 900px;
-      margin: 0 auto;
-      padding: 60px 24px 80px;
-      position: relative;
-      z-index: 2;
-    }
+        h1 {
+            font-size: 42px;
+            font-weight: 400;
+            margin-bottom: 12px;
+            letter-spacing: -0.5px;
+        }
 
-    .fade-in {
-      opacity: 0;
-      transform: translateY(15px);
-      animation: fadeIn 0.8s forwards;
-    }
+        .tagline {
+            font-size: 18px;
+            color: #666;
+            font-weight: 300;
+        }
 
-    @keyframes fadeIn {
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
+        section {
+            margin-bottom: 80px;
+        }
 
-    .delay-1 { animation-delay: 0.1s; }
-    .delay-2 { animation-delay: 0.2s; }
-    .delay-3 { animation-delay: 0.3s; }
-    .delay-4 { animation-delay: 0.4s; }
-    .delay-5 { animation-delay: 0.5s; }
+        h2 {
+            font-size: 24px;
+            font-weight: 400;
+            margin-bottom: 32px;
+            letter-spacing: -0.3px;
+        }
 
-    .section {
-      margin-bottom: 70px;
-    }
+        .about-text {
+            font-size: 16px;
+            line-height: 1.8;
+            color: #444;
+            max-width: 700px;
+        }
 
-    .section-title {
-      font-size: 20px;
-      font-weight: 600;
-      margin-bottom: 24px;
-      color: var(--textus);
-      text-align: center;
-    }
+        .skills-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 24px;
+        }
 
-    .profile {
-      text-align: center;
-      margin-bottom: 60px;
-    }
+        .skill-item {
+            padding: 20px;
+            border: 1px solid #e5e5e5;
+            border-radius: 4px;
+            background: #fafafa;
+        }
 
-    .avatar {
-      width: 120px;
-      height: 120px;
-      border-radius: 12px;
-      object-fit: cover;
-      margin-bottom: 20px;
-      border: 1px solid var(--border);
-      transition: border-color 0.3s;
-    }
+        .skill-item h3 {
+            font-size: 14px;
+            font-weight: 500;
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: #1a1a1a;
+        }
 
-    .avatar:hover {
-      border-color: var(--accent);
-    }
+        .skill-item p {
+            font-size: 14px;
+            color: #666;
+            line-height: 1.6;
+        }
 
-    .nickname {
-      font-size: 32px;
-      font-weight: 700;
-      margin-bottom: 12px;
-    }
+        .projects {
+            display: flex;
+            flex-direction: column;
+            gap: 48px;
+        }
 
-    .badges {
-      display: flex;
-      justify-content: center;
-      gap: 8px;
-      margin-bottom: 20px;
-      flex-wrap: wrap;
-    }
+        .project {
+            padding-bottom: 48px;
+            border-bottom: 1px solid #e5e5e5;
+        }
 
-    .badge {
-      font-size: 13px;
-      color: var(--text-secondary);
-      background: rgba(108, 92, 231, 0.08);
-      padding: 4px 10px;
-      border-radius: 20px;
-      font-weight: 500;
-    }
+        .project:last-child {
+            border-bottom: none;
+            padding-bottom: 0;
+        }
 
-    .bio {
-      font-size: 17px;
-      color: var(--text-secondary);
-      max-width: 600px;
-      margin: 0 auto;
-    }
+        .project h3 {
+            font-size: 20px;
+            font-weight: 500;
+            margin-bottom: 8px;
+        }
 
-    .socials {
-      display: flex;
-      justify-content: center;
-      flex-wrap: wrap;
-      gap: 20px;
-      margin-bottom: 50px;
-    }
+        .project-meta {
+            font-size: 14px;
+            color: #999;
+            margin-bottom: 16px;
+        }
 
-    .social-link {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      padding: 12px 20px;
-      border-radius: var(--radius);
-      text-decoration: none;
-      color: var(--text);
-      font-weight: 500;
-      font-size: 15px;
-      transition: all 0.25s ease;
-      position: relative;
-      overflow: hidden;
-      border: 1px solid var(--border);
-      background: transparent;
-    }
+        .project-description {
+            font-size: 16px;
+            color: #444;
+            line-height: 1.8;
+            max-width: 700px;
+        }
 
-    .social-link::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: radial-gradient(circle at bottom, var(--accentt), transparent 70%);
-      opacity: 0.15;
-      z-index: 0;
-    }
+        .project-link {
+            display: inline-block;
+            margin-top: 16px;
+            font-size: 14px;
+            color: #1a1a1a;
+            text-decoration: none;
+            border-bottom: 1px solid #1a1a1a;
+            transition: color 0.3s, border-color 0.3s;
+        }
 
-    .social-link span {
-      position: relative;
-      z-index: 1;
-    }
+        .project-link:hover {
+            color: #666;
+            border-bottom-color: #666;
+        }
 
-    .social-link:hover {
-      border-color: var(--accent);
-      color: var(--accent-hover);
-      transform: translateY(-2px);
-    }
+        .contact-section {
+            padding: 40px;
+            background: #fafafa;
+            border-radius: 4px;
+            text-align: center;
+        }
 
-    .social-icon {
-      width: 20px;
-      height: 20px;
-    }
+        .contact-section p {
+            font-size: 16px;
+            color: #666;
+            margin-bottom: 20px;
+        }
 
-    .projects {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-      gap: 24px;
-    }
+        .contact-links {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
 
-    .project-card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      overflow: hidden;
-      text-decoration: none;
-      color: inherit;
-      transition: all 0.3s;
-    }
+        .contact-link {
+            color: #1a1a1a;
+            text-decoration: none;
+            font-size: 14px;
+            border: 1px solid #1a1a1a;
+            padding: 10px 20px;
+            border-radius: 4px;
+            transition: all 0.3s;
+        }
 
-    .project-card:hover {
-      border-color: var(--accent);
-      transform: translateY(-3px);
-    }
+        .contact-link:hover {
+            background: #1a1a1a;
+            color: #ffffff;
+        }
 
-    .project-banner {
-      width: 100%;
-      height: 120px;
-      object-fit: cover;
-      display: block;
-    }
+        footer {
+            text-align: center;
+            padding: 40px 0;
+            margin-top: 80px;
+            border-top: 1px solid #e5e5e5;
+            font-size: 14px;
+            color: #999;
+        }
 
-    .project-info {
-      padding: 16px;
-    }
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 32px;
+            }
 
-    .project-name {
-      font-weight: 600;
-      font-size: 17px;
-      margin-bottom: 8px;
-    }
+            .tagline {
+                font-size: 16px;
+            }
 
-    .project-desc {
-      font-size: 14px;
-      color: var(--text-secondary);
-      line-height: 1.5;
-    }
+            h2 {
+                font-size: 20px;
+            }
 
-    footer {
-      text-align: center;
-      padding-top: 40px;
-      font-size: 14px;
-      color: var(--text-secondary);
-      border-top: 1px solid var(--border);
-    }
+            header {
+                padding: 60px 0 40px 0;
+                margin-bottom: 60px;
+            }
 
-    header {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      background: rgba(13, 13, 15, 0.9);
-      z-index: 100;
-      padding: 16px 24px;
-      backdrop-filter: blur(10px);
-      border-bottom: 1px solid var(--border);
-    }
+            section {
+                margin-bottom: 60px;
+            }
 
-    .header-content {
-      max-width: 900px;
-      margin: 0 auto;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
+            .skills-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
 
-    .logo {
-      font-size: 20px;
-      font-weight: 700;
-      color: var(--text);
-      text-decoration: none;
-    }
+        @media (max-width: 480px) {
+            .container {
+                padding: 0 16px;
+            }
 
-    nav ul {
-      display: flex;
-      gap: 24px;
-      list-style: none;
-    }
+            h1 {
+                font-size: 28px;
+            }
 
-    nav a {
-      color: var(--text);
-      text-decoration: none;
-      font-weight: 500;
-      transition: color 0.2s;
-    }
+            h2 {
+                font-size: 18px;
+            }
 
-    nav a:hover {
-      color: var(--accent);
-    }
+            .skills-grid {
+                grid-template-columns: 1fr;
+            }
 
-    .burger {
-      display: none;
-      flex-direction: column;
-      cursor: pointer;
-    }
+            .contact-links {
+                flex-direction: column;
+            }
 
-    .burger span {
-      width: 25px;
-      height: 3px;
-      background: var(--text);
-      margin: 3px 0;
-      transition: 0.3s;
-    }
-
-    @media (max-width: 768px) {
-      .burger {
-        display: flex;
-      }
-
-      nav ul {
-        position: absolute;
-        top: 60px;
-        left: 0;
-        width: 100%;
-        background: var(--bg);
-        flex-direction: column;
-        padding: 16px 0;
-        border-top: 1px solid var(--border);
-        gap: 12px;
-        margin: 0;
-        opacity: 0;
-        visibility: hidden;
-        transform: translateY(-10px);
-        transition: opacity 0.25s ease, transform 0.25s ease, visibility 0.25s;
-        pointer-events: none;
-      }
-
-      nav ul.active {
-        opacity: 1;
-        visibility: visible;
-        transform: translateY(0);
-        pointer-events: auto;
-      }
-
-      nav ul li {
-        text-align: center;
-      }
-
-      .container {
-        padding-top: 100px;
-      }
-
-      .avatar { width: 100px; height: 100px; }
-      .nickname { font-size: 26px; }
-    }
-
-    ::-webkit-scrollbar {
-      width: 10px;
-      height: 10px;
-    }
-    ::-webkit-scrollbar-track {
-      background: transparent;
-    }
-    ::-webkit-scrollbar-thumb {
-      background: rgba(108, 92, 231, 0.25);
-      border-radius: 10px;
-      border: 2px solid transparent;
-      background-clip: content-box;
-    }
-    ::-webkit-scrollbar-thumb:hover {
-      background: rgba(108, 92, 231, 0.45);
-    }
-    ::selection {
-      background: rgba(108, 92, 231, 0.3);
-      color: #ffffff;
-    }
-    ::-moz-selection {
-      background: rgba(108, 92, 231, 0.3);
-      color: #ffffff;
-    }
-  </style>
+            .contact-link {
+                width: 100%;
+            }
+        }
+    </style>
 </head>
 <body>
-  <div id="tsparticles"></div>
+    <div class="container">
+        <header>
+            <h1>Your Name</h1>
+            <p class="tagline">Designer / Developer / Creative Technologist</p>
+        </header>
 
-  <header>
-    <div class="header-content">
-      <a href="/" class="logo">urliui</a>
-      <nav>
-        <ul id="nav-menu">
-          <li><a href="/">Главная</a></li>
-          <li><a href="/buddies">Кенты</a></li>
-        </ul>
-        <div class="burger" id="burger">
-          <span></span>
-          <span></span>
-          <span></span>
-        </div>
-      </nav>
+        <section id="about">
+            <h2>About</h2>
+            <p class="about-text">
+                Welcome to my corner of the internet. I'm passionate about creating thoughtful, minimal digital experiences. With expertise spanning design and development, I focus on bringing clarity and purpose to every project. When I'm not designing or coding, you'll find me exploring new ideas or enjoying a good cup of coffee.
+            </p>
+        </section>
+
+        <section id="skills">
+            <h2>Skills</h2>
+            <div class="skills-grid">
+                <div class="skill-item">
+                    <h3>Design</h3>
+                    <p>UI/UX, Visual Design, Wireframing, Prototyping</p>
+                </div>
+                <div class="skill-item">
+                    <h3>Development</h3>
+                    <p>HTML, CSS, JavaScript, React</p>
+                </div>
+                <div class="skill-item">
+                    <h3>Tools</h3>
+                    <p>Figma, VS Code, Git, Adobe Suite</p>
+                </div>
+                <div class="skill-item">
+                    <h3>Soft Skills</h3>
+                    <p>Communication, Problem Solving, Collaboration</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="work">
+            <h2>Selected Work</h2>
+            <div class="projects">
+                <div class="project">
+                    <h3>Project One</h3>
+                    <p class="project-meta">2024 • Design & Development</p>
+                    <p class="project-description">
+                        A brief description of your first project. Explain the challenge, your approach, and the results. Keep it concise and focused on the impact.
+                    </p>
+                    <a href="#" class="project-link">View project →</a>
+                </div>
+
+                <div class="project">
+                    <h3>Project Two</h3>
+                    <p class="project-meta">2023 • Design</p>
+                    <p class="project-description">
+                        Describe your second significant project. What problem did you solve? What made this project meaningful? What did you learn?
+                    </p>
+                    <a href="#" class="project-link">View project →</a>
+                </div>
+
+                <div class="project">
+                    <h3>Project Three</h3>
+                    <p class="project-meta">2023 • Development</p>
+                    <p class="project-description">
+                        Your third project summary. This is where you showcase your best work and demonstrate your skills and expertise in action.
+                    </p>
+                    <a href="#" class="project-link">View project →</a>
+                </div>
+            </div>
+        </section>
+
+        <section id="contact">
+            <div class="contact-section">
+                <h2 style="margin-bottom: 16px;">Let's Work Together</h2>
+                <p>I'm always interested in hearing about new projects and opportunities.</p>
+                <div class="contact-links">
+                    <a href="mailto:your.email@example.com" class="contact-link">Email</a>
+                    <a href="https://twitter.com" class="contact-link">Twitter</a>
+                    <a href="https://linkedin.com" class="contact-link">LinkedIn</a>
+                    <a href="https://github.com" class="contact-link">GitHub</a>
+                </div>
+            </div>
+        </section>
+
+        <footer>
+            <p>&copy; 2024. Designed and built by You.</p>
+        </footer>
     </div>
-  </header>
-
-  <div class="container">
-    <div class="profile fade-in delay-1">
-      <img src="https://vzge.me/face/1000/urqiui" alt="urliui" class="avatar">
-      <h1 class="nickname">urliui</h1>
-      <div class="badges">
-        <span class="badge">#Юрли!</span>
-        <span class="badge">#лап</span>
-        <span class="badge">#Ауюми</span>
-        <span class="badge">#СПм</span>
-        <span class="badge">#лампово</span>
-      </div>
-      <p class="bio">Привет! Я - Юрли. Ютубер по майну, дизайнер, разработчик, ну и просто душевный друг :3</p>
-    </div>
-
-    <div class="section fade-in delay-2">
-      <h2 class="section-title">Соц. сети</h2>
-      <div class="socials">
-        <a href="https://www.youtube.com/@urqiui" class="social-link" target="_blank" rel="noopener">
-          <img src="https://cdn-icons-png.flaticon.com/512/187/187209.png" class="social-icon" alt="YouTube">
-          <span>YouTube</span>
-        </a>
-        <a href="https://discord.gg/4jzNvf493h" class="social-link" target="_blank" rel="noopener">
-          <img src="https://cdn-icons-png.flaticon.com/512/2111/2111370.png" class="social-icon" alt="Discord">
-          <span>Discord</span>
-        </a>
-        <a href="https://github.com/urliui" class="social-link" target="_blank" rel="noopener">
-          <img src="https://cdn-icons-png.flaticon.com/512/25/25231.png" class="social-icon" alt="GitHub">
-          <span>GitHub</span>
-        </a>
-        <a href="https://t.me/urliuiq" class="social-link" target="_blank" rel="noopener">
-          <img src="https://cdn-icons-png.flaticon.com/512/2111/2111646.png" class="social-icon" alt="Telegram">
-          <span>Telegram</span>
-        </a>
-        <a href="https://namemc.com/profile/urqiui" class="social-link" target="_blank" rel="noopener">
-          <img src="https://cdn.simpleicons.org/namemc/ffffff" class="social-icon" alt="NameMC">
-          <span>NameMC</span>
-        </a>
-        <a href="https://bsky.app/profile/urliui.bsky.social" class="social-link" target="_blank" rel="noopener">
-          <img src="https://cdn.simpleicons.org/bluesky/ffffff" class="social-icon" alt="Bluesky">
-          <span>Bluesky</span>
-        </a>
-      </div>
-    </div>
-
-    <div class="section fade-in delay-3">
-      <h2 class="section-title">Проекты</h2>
-      <div class="projects" id="projects-container"></div>
-    </div>
-
-    <footer>
-      &copy; 2025 urliui Все права защищены<br>
-      Not an official Minecraft product. We are in no way affiliated with or endorsed by Mojang Synergies AB, Microsoft Corporation or other rightsholders.
-    </footer>
-  </div>
-
-  <script>
-    const cleanUrl = str => str.trim();
-
-    const DATA = {
-      projects: [
-        {
-          name: "Ayume",
-          desc: "Ауюми - приватный сервер твоей мечты. Это как с модами, но моды вам совсем не нужны. Куча механик, справедливая администрация и сообщество без токса, только на - Ауюми.",
-          banner: "https://ayume.ru/mainlogo.png",
-          url: "https://ayume.ru"
-        },
-        {
-          name: "urliui.ru",
-          desc: "Исходный код WebApp информации о Юрли!",
-          banner: "https://vzge.me/face/1000/urqiui",
-          url: "https://github.com/urliui/urliui.ru"
-        }
-      ]
-    };
-
-    const projectsContainer = document.getElementById('projects-container');
-    DATA.projects.forEach(proj => {
-      const card = document.createElement('a');
-      card.href = cleanUrl(proj.url);
-      card.className = 'project-card';
-      card.target = '_blank';
-      card.rel = 'noopener';
-      card.innerHTML = `
-        <img src="${cleanUrl(proj.banner)}" class="project-banner" alt="${proj.name}">
-        <div class="project-info">
-          <div class="project-name">${proj.name}</div>
-          <div class="project-desc">${proj.desc}</div>
-        </div>
-      `;
-      projectsContainer.appendChild(card);
-    });
-
-    const burger = document.getElementById('burger');
-    const navMenu = document.getElementById('nav-menu');
-
-    if (burger && navMenu) {
-      burger.addEventListener('click', () => {
-        navMenu.classList.toggle('active');
-        const spans = burger.querySelectorAll('span');
-        if (navMenu.classList.contains('active')) {
-          spans[0].style.transform = 'rotate(45deg) translate(6px, 6px)';
-          spans[1].style.opacity = '0';
-          spans[2].style.transform = 'rotate(-45deg) translate(6px, -6px)';
-        } else {
-          spans[0].style.transform = 'rotate(0) translate(0, 0)';
-          spans[1].style.opacity = '1';
-          spans[2].style.transform = 'rotate(0) translate(0, 0)';
-        }
-      });
-
-      navMenu.querySelectorAll('a').forEach(link => {
-        link.addEventListener('click', () => {
-          navMenu.classList.remove('active');
-          const spans = burger.querySelectorAll('span');
-          spans[0].style.transform = 'rotate(0) translate(0, 0)';
-          spans[1].style.opacity = '1';
-          spans[2].style.transform = 'rotate(0) translate(0, 0)';
-        });
-      });
-    }
-
-    tsParticles.load("tsparticles", {
-      fpsLimit: 60,
-      particles: {
-        number: { value: 50 },
-        color: { value: "#6c5ce7" },
-        shape: { type: "circle" },
-        opacity: { value: 0.2, random: true },
-        size: { value: { min: 1, max: 3 } },
-        move: {
-          enable: true,
-          speed: 0.8,
-          direction: "none",
-          random: true,
-          straight: false
-        }
-      },
-      interactivity: {
-        detectsOn: "canvas",
-        events: {
-          onHover: { enable: true, mode: "repulse" },
-          resize: true
-        }
-      },
-      detectRetina: true,
-      background: { color: "#0d0d0f" }
-    });
-  </script>
 </body>
 </html>

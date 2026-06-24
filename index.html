@@ -3,17 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Liquid Glass Bottom Sheet</title>
+    <title>Monotone Liquid Glass Sheet</title>
     <style>
         :root {
-            --bg-main: #121212;
-            --bg-sheet: #1c1c1e;
-            --text-main: #ffffff;
+            --bg-body: #f2f2f7;
+            --bg-sheet: #ffffff;
+            --text-main: #000000;
             --text-muted: #8e8e93;
-            --border-color: rgba(255, 255, 255, 0.15);
-            --overlay-color: rgba(0, 0, 0, 0.6);
-            --glass-bg: rgba(255, 255, 255, 0.05);
-            --glass-active: rgba(10, 132, 255, 0.3);
+            --switch-off: #e5e5ea;
+            --switch-on: #000000; /* Монотонный активный цвет */
         }
 
         * {
@@ -25,13 +23,12 @@
         }
 
         body {
-            background-color: var(--bg-main);
+            background-color: var(--bg-body);
             color: var(--text-main);
             overflow: hidden;
             height: 100vh;
         }
 
-        /* Главный экран */
         .app-container {
             display: flex;
             justify-content: center;
@@ -40,27 +37,25 @@
         }
 
         .btn-primary {
-            background: #ffffff;
-            color: #000000;
+            background: var(--text-main);
+            color: #ffffff;
             border: none;
             padding: 16px 32px;
             font-size: 16px;
             font-weight: 600;
-            border-radius: 14px;
+            border-radius: 12px;
             cursor: pointer;
-            transition: transform 0.1s ease, opacity 0.2s;
+            transition: transform 0.1s;
         }
 
         .btn-primary:active {
-            transform: scale(0.96);
-            opacity: 0.9;
+            transform: scale(0.95);
         }
 
-        /* Оверлей */
         .sheet-overlay {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
-            background: var(--overlay-color);
+            background: rgba(0, 0, 0, 0.4);
             opacity: 0;
             visibility: hidden;
             transition: opacity 0.4s cubic-bezier(0.25, 1, 0.5, 1), visibility 0.4s;
@@ -72,14 +67,13 @@
             visibility: visible;
         }
 
-        /* Bottom Sheet */
+        /* BOTTOM SHEET - Однотонный, бордер только сверху */
         .bottom-sheet {
             position: fixed;
             left: 0; right: 0; bottom: 0;
             height: 95vh;
             background: var(--bg-sheet);
-            /* Граница только СВЕРХУ */
-            border-top: 1px solid var(--border-color);
+            border-top: 1px solid rgba(0, 0, 0, 0.15); /* Единственный border */
             border-top-left-radius: 24px;
             border-top-right-radius: 24px;
             z-index: 999;
@@ -97,154 +91,150 @@
             transition: none;
         }
 
-        /* Зона хендла для перетаскивания */
         .sheet-header {
-            height: 44px;
+            height: 48px;
             display: flex;
             justify-content: center;
             align-items: center;
             cursor: grab;
-            user-select: none;
         }
 
         .sheet-header:active {
             cursor: grabbing;
         }
 
-        /* СВГ Полосочка, которая гнется */
+        /* SVG Полоска */
         .drag-svg {
-            width: 60px;
+            width: 50px;
             height: 20px;
         }
 
         .drag-path {
             fill: none;
-            stroke: rgba(255, 255, 255, 0.3);
+            stroke: #000000;
             stroke-width: 5;
             stroke-linecap: round;
-            transition: d 0.2s ease-out; /* Плавный возврат в дефолт */
+            transition: d 0.25s cubic-bezier(0.25, 1, 0.5, 1);
         }
 
         .bottom-sheet.dragging .drag-path {
-            transition: none; /* Мгновенный отклик при перетаскивании */
+            transition: none;
         }
 
-        /* Контент */
         .sheet-content {
-            padding: 10px 24px 40px 24px;
+            padding: 0 24px 40px 24px;
             flex: 1;
             overflow-y: auto;
         }
 
         .sheet-content h2 {
-            font-size: 26px;
+            font-size: 28px;
             font-weight: 700;
-            margin-bottom: 6px;
+            margin-bottom: 8px;
             letter-spacing: -0.5px;
         }
 
         .sheet-content p {
             color: var(--text-muted);
             font-size: 15px;
-            margin-bottom: 30px;
+            margin-bottom: 32px;
         }
 
-        /* Элементы без бордеров */
+        /* СПИСОК - никаких рамок и фонов */
         .settings-list {
             display: flex;
             flex-direction: column;
-            gap: 16px;
+            gap: 24px; /* Просто отступы вместо рамок */
         }
 
         .settings-item {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 18px 0;
+            /* Убраны background, padding и border */
         }
 
         .settings-item span {
             font-size: 17px;
             font-weight: 500;
-            letter-spacing: -0.2px;
         }
 
         /* LIQUID GLASS SWITCHER */
         .liquid-switch {
             position: relative;
             display: inline-block;
-            width: 54px;
-            height: 32px;
+            width: 56px;
+            height: 34px;
         }
 
         .liquid-switch input {
             opacity: 0; width: 0; height: 0;
         }
 
+        /* Фон свитчера */
         .liquid-slider {
             position: absolute;
             top: 0; left: 0; right: 0; bottom: 0;
             cursor: pointer;
-            background: rgba(255, 255, 255, 0.06);
-            border-radius: 32px;
-            box-shadow: 
-                inset 0 1px 3px rgba(0, 0, 0, 0.4),
-                inset 0 -1px 1px rgba(255, 255, 255, 0.05);
-            transition: background 0.3s cubic-bezier(0.25, 1, 0.5, 1);
-            overflow: hidden;
+            background: var(--switch-off);
+            border-radius: 34px;
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1); /* Внутренняя тень трека */
+            transition: background 0.4s ease;
         }
 
-        /* Капля (Жидкое стекло) */
+        /* Стеклянная капля */
         .liquid-slider:before {
             position: absolute;
             content: "";
-            height: 26px;
-            width: 26px;
+            height: 28px;
+            width: 28px;
             left: 3px;
             bottom: 3px;
-            background: rgba(255, 255, 255, 0.15);
+            
+            /* Эффект стекла */
+            background: linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.4) 100%);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
             border-radius: 50%;
-            backdrop-filter: blur(6px);
-            -webkit-backdrop-filter: blur(6px);
             
-            /* Эффект объема стеклянной линзы */
+            /* Объем: внешняя тень + внутренний свет снизу + внутренний свет сверху */
             box-shadow: 
-                0 4px 10px rgba(0, 0, 0, 0.3),
-                inset 0 2px 4px rgba(255, 255, 255, 0.4),
-                inset 0 -2px 4px rgba(0, 0, 0, 0.4);
-            
-            transition: transform 0.3s cubic-bezier(0.25, 1, 0.5, 1), background 0.3s;
+                0 4px 8px rgba(0, 0, 0, 0.2),
+                inset 0 -2px 4px rgba(0, 0, 0, 0.05),
+                inset 0 2px 4px rgba(255, 255, 255, 1);
+                
+            transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
             z-index: 2;
         }
 
-        /* Блик на стекле */
+        /* Жесткий глянцевый блик на стекле */
         .liquid-slider:after {
             position: absolute;
             content: "";
             height: 8px;
             width: 14px;
-            left: 9px;
-            top: 6px;
-            background: rgba(255, 255, 255, 0.4);
-            border-radius: 50% / 40%;
-            transition: transform 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+            left: 10px;
+            top: 5px;
+            background: #ffffff;
+            border-radius: 10px;
+            opacity: 0.8;
+            transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
             z-index: 3;
             pointer-events: none;
         }
 
-        /* Состояние "Включено" */
+        /* Активное состояние */
         input:checked + .liquid-slider {
-            background: var(--glass-active);
-            backdrop-filter: blur(4px);
+            background: var(--switch-on);
+            box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.5);
         }
 
         input:checked + .liquid-slider:before {
             transform: translateX(22px);
-            background: rgba(255, 255, 255, 0.25);
             box-shadow: 
-                0 4px 12px rgba(10, 132, 255, 0.4),
-                inset 0 2px 4px rgba(255, 255, 255, 0.6),
-                inset 0 -2px 3px rgba(0, 0, 0, 0.2);
+                0 4px 8px rgba(0, 0, 0, 0.4),
+                inset 0 -2px 4px rgba(0, 0, 0, 0.2),
+                inset 0 2px 4px rgba(255, 255, 255, 1);
         }
 
         input:checked + .liquid-slider:after {
@@ -255,31 +245,31 @@
 <body>
 
     <div class="app-container">
-        <button id="open-sheet-btn" class="btn-primary">Открыть меню</button>
+        <button id="open-sheet-btn" class="btn-primary">Открыть</button>
     </div>
 
     <div id="sheet-overlay" class="sheet-overlay"></div>
 
     <div id="bottom-sheet" class="bottom-sheet">
         <div class="sheet-header">
-            <svg class="drag-svg" viewBox="0 0 60 20">
-                <path id="drag-path" class="drag-path" d="M 5 10 Q 30 10 55 10" />
+            <svg class="drag-svg" viewBox="0 0 50 20">
+                <path id="drag-path" class="drag-path" d="M 5 10 Q 25 10 45 10" />
             </svg>
         </div>
         <div class="sheet-content">
-            <h2>Haptic & Audio</h2>
-            <p>Управление интерфейсом системы.</p>
+            <h2>Настройки</h2>
+            <p>Монотонный дизайн без лишних рамок.</p>
             
             <div class="settings-list">
                 <div class="settings-item">
-                    <span>Тактильный отклик</span>
+                    <span>Синхронизация</span>
                     <label class="liquid-switch">
                         <input type="checkbox" checked>
                         <span class="liquid-slider"></span>
                     </label>
                 </div>
                 <div class="settings-item">
-                    <span>Пространственное аудио</span>
+                    <span>Локальный сервер</span>
                     <label class="liquid-switch">
                         <input type="checkbox">
                         <span class="liquid-slider"></span>
@@ -298,7 +288,7 @@
 
         let isDragging = false;
         let startY = 0;
-        let initialYForBending = 0;
+        let initialY = 0;
         let currentHeight = 0; 
         const sheetMaxHeight = window.innerHeight * 0.95;
         const sheetMidHeight = window.innerHeight * 0.50;
@@ -313,7 +303,7 @@
             sheet.classList.remove('active');
             overlay.classList.remove('active');
             sheet.style.transform = 'translateY(101%)';
-            resetBlurp();
+            resetLine();
         }
 
         function setSheetHeight(height) {
@@ -322,9 +312,8 @@
             sheet.style.transform = `translateY(${translateY}px)`;
         }
 
-        // Возвращает изгиб полоски в дефолтное горизонтальное положение
-        function resetBlurp() {
-            dragPath.setAttribute('d', 'M 5 10 Q 30 10 55 10');
+        function resetLine() {
+            dragPath.setAttribute('d', 'M 5 10 Q 25 10 45 10');
         }
 
         function startDrag(e) {
@@ -332,7 +321,7 @@
             sheet.classList.add('dragging');
             const clientY = e.touches ? e.touches[0].clientY : e.clientY;
             startY = clientY;
-            initialYForBending = clientY;
+            initialY = clientY;
             
             const matrix = window.getComputedStyle(sheet).transform;
             if (matrix !== 'none') {
@@ -345,43 +334,38 @@
             if (!isDragging) return;
             const clientY = e.touches ? e.touches[0].clientY : e.clientY;
             
-            // Расчет изменения высоты шторки
             const deltaY = startY - clientY; 
             let newHeight = currentHeight + deltaY;
 
             if (newHeight > sheetMaxHeight) {
-                newHeight = sheetMaxHeight + (newHeight - sheetMaxHeight) * 0.15;
+                newHeight = sheetMaxHeight + (newHeight - sheetMaxHeight) * 0.1;
             }
             setSheetHeight(newHeight);
             startY = clientY;
 
-            // Расчет изгиба полоски (Интерактивный Blurp эффект)
-            // Интенсивность зависит от разницы начального тача и движения пальца
-            const totalDeltaY = clientY - initialYForBending;
-            // Лимитируем изгиб в пределах от -8 до 28 координат SVG
-            let bend = 10 + (totalDeltaY * 0.25);
-            bend = Math.max(-5, Math.min(25, bend)); 
+            // Изгиб линии
+            const totalDeltaY = clientY - initialY;
+            let bend = 10 + (totalDeltaY * 0.3);
+            bend = Math.max(0, Math.min(20, bend)); 
             
-            dragPath.setAttribute('d', `M 5 10 Q 30 ${bend} 55 10`);
+            dragPath.setAttribute('d', `M 5 10 Q 25 ${bend} 45 10`);
         }
 
         function endDrag() {
             if (!isDragging) return;
             isDragging = false;
             sheet.classList.remove('dragging');
-            resetBlurp(); // Плавно возвращаем полоску в ровную линию
+            resetLine();
 
-            // Фиксация в контрольных точках (Snapping)
             if (currentHeight > (sheetMidHeight + sheetMaxHeight) / 2) {
                 setSheetHeight(sheetMaxHeight);
-            } else if (currentHeight > sheetMidHeight / 1.4) {
+            } else if (currentHeight > sheetMidHeight / 1.5) {
                 setSheetHeight(sheetMidHeight);
             } else {
                 closeSheet();
             }
         }
 
-        // События
         openBtn.addEventListener('click', openSheet);
         overlay.addEventListener('click', closeSheet);
 

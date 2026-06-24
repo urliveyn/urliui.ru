@@ -1,326 +1,330 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Your Name - Portfolio</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Solid Bottom Sheet</title>
     <style>
+        :root {
+            --bg-color: #ffffff;
+            --text-color: #111111;
+            --accent-color: #007aff;
+            --switch-bg: #e9e9ea;
+            --switch-green: #34c759;
+            --border-color: #222222;
+            --overlay-color: rgba(0, 0, 0, 0.4);
+        }
+
         * {
+            box-sizing: border-box;
             margin: 0;
             padding: 0;
-            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            -webkit-tap-highlight-color: transparent;
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-            color: #1a1a1a;
-            background: #ffffff;
-            line-height: 1.6;
+            background-color: #f5f5f7;
+            color: var(--text-color);
+            overflow: hidden;
+            height: 100vh;
         }
 
-        .container {
-            max-width: 900px;
-            margin: 0 auto;
-            padding: 0 24px;
+        /* Главный контейнер и кнопка */
+        .app-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
         }
 
-        header {
-            padding: 80px 0 60px 0;
-            border-bottom: 1px solid #e5e5e5;
-            margin-bottom: 80px;
-        }
-
-        h1 {
-            font-size: 42px;
-            font-weight: 400;
-            margin-bottom: 12px;
-            letter-spacing: -0.5px;
-        }
-
-        .tagline {
-            font-size: 18px;
-            color: #666;
-            font-weight: 300;
-        }
-
-        section {
-            margin-bottom: 80px;
-        }
-
-        h2 {
-            font-size: 24px;
-            font-weight: 400;
-            margin-bottom: 32px;
-            letter-spacing: -0.3px;
-        }
-
-        .about-text {
+        .btn-primary {
+            background: var(--text-color);
+            color: #fff;
+            border: none;
+            padding: 16px 28px;
             font-size: 16px;
-            line-height: 1.8;
-            color: #444;
-            max-width: 700px;
+            font-weight: 600;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: transform 0.1s ease;
         }
 
-        .skills-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 24px;
+        .btn-primary:active {
+            transform: scale(0.96);
         }
 
-        .skill-item {
-            padding: 20px;
-            border: 1px solid #e5e5e5;
-            border-radius: 4px;
-            background: #fafafa;
+        /* Затемнение заднего фона */
+        .sheet-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--overlay-color);
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s cubic-bezier(0.25, 1, 0.5, 1), visibility 0.3s;
+            z-index: 998;
         }
 
-        .skill-item h3 {
-            font-size: 14px;
-            font-weight: 500;
-            margin-bottom: 12px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            color: #1a1a1a;
+        .sheet-overlay.active {
+            opacity: 1;
+            visibility: visible;
         }
 
-        .skill-item p {
-            font-size: 14px;
-            color: #666;
-            line-height: 1.6;
-        }
-
-        .projects {
+        /* Bottom Sheet контейнер */
+        .bottom-sheet {
+            position: fixed;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            height: 95vh;
+            background: var(--bg-color);
+            border-top: 2px solid var(--border-color);
+            border-top-left-radius: 20px;
+            border-top-right-radius: 20px;
+            z-index: 999;
+            transform: translateY(101%);
+            transition: transform 0.3s cubic-bezier(0.25, 1, 0.5, 1);
             display: flex;
             flex-direction: column;
-            gap: 48px;
         }
 
-        .project {
-            padding-bottom: 48px;
-            border-bottom: 1px solid #e5e5e5;
+        .bottom-sheet.active {
+            transform: translateY(100%);
         }
 
-        .project:last-child {
-            border-bottom: none;
-            padding-bottom: 0;
+        .bottom-sheet.dragging {
+            transition: none; /* Отключаем анимации при drag-событиях для плавности */
         }
 
-        .project h3 {
-            font-size: 20px;
-            font-weight: 500;
+        /* Область для захвата (хендл) */
+        .sheet-header {
+            height: 36px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: grab;
+            user-select: none;
+        }
+
+        .sheet-header:active {
+            cursor: grabbing;
+        }
+
+        .sheet-drag-handle {
+            width: 40px;
+            height: 5px;
+            background: #ccc;
+            border-radius: 3px;
+        }
+
+        /* Контент внутри шторки */
+        .sheet-content {
+            padding: 0 24px 40px 24px;
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        .sheet-content h2 {
+            font-size: 24px;
+            font-weight: 700;
             margin-bottom: 8px;
         }
 
-        .project-meta {
-            font-size: 14px;
-            color: #999;
-            margin-bottom: 16px;
-        }
-
-        .project-description {
-            font-size: 16px;
-            color: #444;
-            line-height: 1.8;
-            max-width: 700px;
-        }
-
-        .project-link {
-            display: inline-block;
-            margin-top: 16px;
-            font-size: 14px;
-            color: #1a1a1a;
-            text-decoration: none;
-            border-bottom: 1px solid #1a1a1a;
-            transition: color 0.3s, border-color 0.3s;
-        }
-
-        .project-link:hover {
+        .sheet-content p {
             color: #666;
-            border-bottom-color: #666;
+            font-size: 14px;
+            margin-bottom: 24px;
         }
 
-        .contact-section {
-            padding: 40px;
-            background: #fafafa;
-            border-radius: 4px;
-            text-align: center;
-        }
-
-        .contact-section p {
-            font-size: 16px;
-            color: #666;
-            margin-bottom: 20px;
-        }
-
-        .contact-links {
+        /* Элементы настроек */
+        .settings-list {
             display: flex;
-            gap: 20px;
-            justify-content: center;
-            flex-wrap: wrap;
+            flex-direction: column;
+            gap: 12px;
         }
 
-        .contact-link {
-            color: #1a1a1a;
-            text-decoration: none;
-            font-size: 14px;
-            border: 1px solid #1a1a1a;
-            padding: 10px 20px;
-            border-radius: 4px;
-            transition: all 0.3s;
+        .settings-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px;
+            background: #f9f9f9;
+            border: 1.5px solid var(--border-color);
+            border-radius: 12px;
         }
 
-        .contact-link:hover {
-            background: #1a1a1a;
-            color: #ffffff;
+        .settings-item span {
+            font-size: 16px;
+            font-weight: 500;
         }
 
-        footer {
-            text-align: center;
-            padding: 40px 0;
-            margin-top: 80px;
-            border-top: 1px solid #e5e5e5;
-            font-size: 14px;
-            color: #999;
+        /* iOS Switcher */
+        .ios-switch {
+            position: relative;
+            display: inline-block;
+            width: 51px;
+            height: 31px;
         }
 
-        @media (max-width: 768px) {
-            h1 {
-                font-size: 32px;
-            }
-
-            .tagline {
-                font-size: 16px;
-            }
-
-            h2 {
-                font-size: 20px;
-            }
-
-            header {
-                padding: 60px 0 40px 0;
-                margin-bottom: 60px;
-            }
-
-            section {
-                margin-bottom: 60px;
-            }
-
-            .skills-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
+        .ios-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
         }
 
-        @media (max-width: 480px) {
-            .container {
-                padding: 0 16px;
-            }
+        .ios-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-color: var(--switch-bg);
+            transition: background-color 0.25s cubic-bezier(0.25, 1, 0.5, 1);
+            border-radius: 31px;
+        }
 
-            h1 {
-                font-size: 28px;
-            }
+        .ios-slider:before {
+            position: absolute;
+            content: "";
+            height: 27px;
+            width: 27px;
+            left: 2px;
+            bottom: 2px;
+            background-color: white;
+            transition: transform 0.25s cubic-bezier(0.25, 1, 0.5, 1);
+            border-radius: 50%;
+            box-shadow: 0 3px 8px rgba(0,0,0,0.15);
+        }
 
-            h2 {
-                font-size: 18px;
-            }
+        input:checked + .ios-slider {
+            background-color: var(--switch-green);
+        }
 
-            .skills-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .contact-links {
-                flex-direction: column;
-            }
-
-            .contact-link {
-                width: 100%;
-            }
+        input:checked + .ios-slider:before {
+            transform: translateX(20px);
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <header>
-            <h1>Your Name</h1>
-            <p class="tagline">Designer / Developer / Creative Technologist</p>
-        </header>
 
-        <section id="about">
-            <h2>About</h2>
-            <p class="about-text">
-                Welcome to my corner of the internet. I'm passionate about creating thoughtful, minimal digital experiences. With expertise spanning design and development, I focus on bringing clarity and purpose to every project. When I'm not designing or coding, you'll find me exploring new ideas or enjoying a good cup of coffee.
-            </p>
-        </section>
-
-        <section id="skills">
-            <h2>Skills</h2>
-            <div class="skills-grid">
-                <div class="skill-item">
-                    <h3>Design</h3>
-                    <p>UI/UX, Visual Design, Wireframing, Prototyping</p>
-                </div>
-                <div class="skill-item">
-                    <h3>Development</h3>
-                    <p>HTML, CSS, JavaScript, React</p>
-                </div>
-                <div class="skill-item">
-                    <h3>Tools</h3>
-                    <p>Figma, VS Code, Git, Adobe Suite</p>
-                </div>
-                <div class="skill-item">
-                    <h3>Soft Skills</h3>
-                    <p>Communication, Problem Solving, Collaboration</p>
-                </div>
-            </div>
-        </section>
-
-        <section id="work">
-            <h2>Selected Work</h2>
-            <div class="projects">
-                <div class="project">
-                    <h3>Project One</h3>
-                    <p class="project-meta">2024 • Design & Development</p>
-                    <p class="project-description">
-                        A brief description of your first project. Explain the challenge, your approach, and the results. Keep it concise and focused on the impact.
-                    </p>
-                    <a href="#" class="project-link">View project →</a>
-                </div>
-
-                <div class="project">
-                    <h3>Project Two</h3>
-                    <p class="project-meta">2023 • Design</p>
-                    <p class="project-description">
-                        Describe your second significant project. What problem did you solve? What made this project meaningful? What did you learn?
-                    </p>
-                    <a href="#" class="project-link">View project →</a>
-                </div>
-
-                <div class="project">
-                    <h3>Project Three</h3>
-                    <p class="project-meta">2023 • Development</p>
-                    <p class="project-description">
-                        Your third project summary. This is where you showcase your best work and demonstrate your skills and expertise in action.
-                    </p>
-                    <a href="#" class="project-link">View project →</a>
-                </div>
-            </div>
-        </section>
-
-        <section id="contact">
-            <div class="contact-section">
-                <h2 style="margin-bottom: 16px;">Let's Work Together</h2>
-                <p>I'm always interested in hearing about new projects and opportunities.</p>
-                <div class="contact-links">
-                    <a href="mailto:your.email@example.com" class="contact-link">Email</a>
-                    <a href="https://twitter.com" class="contact-link">Twitter</a>
-                    <a href="https://linkedin.com" class="contact-link">LinkedIn</a>
-                    <a href="https://github.com" class="contact-link">GitHub</a>
-                </div>
-            </div>
-        </section>
-
-        <footer>
-            <p>&copy; 2024. Designed and built by You.</p>
-        </footer>
+    <div class="app-container">
+        <button id="open-sheet-btn" class="btn-primary">Открыть Bottom Sheet</button>
     </div>
+
+    <div id="sheet-overlay" class="sheet-overlay"></div>
+
+    <div id="bottom-sheet" class="bottom-sheet">
+        <div class="sheet-header">
+            <div class="sheet-drag-handle"></div>
+        </div>
+        <div class="sheet-content">
+            <h2>Настройки</h2>
+            <p>Смахните вниз, чтобы закрыть, или потяните вверх для полного экрана.</p>
+            
+            <div class="settings-list">
+                <div class="settings-item">
+                    <span>Включить уведомления</span>
+                    <label class="ios-switch">
+                        <input type="checkbox" checked>
+                        <span class="ios-slider"></span>
+                    </label>
+                </div>
+                <div class="settings-item">
+                    <span>Режим разработчика</span>
+                    <label class="ios-switch">
+                        <input type="checkbox">
+                        <span class="ios-slider"></span>
+                    </label>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const openBtn = document.getElementById('open-sheet-btn');
+        const sheet = document.getElementById('bottom-sheet');
+        const overlay = document.getElementById('sheet-overlay');
+        const dragHandle = document.querySelector('.sheet-header');
+
+        let isDragging = false;
+        let startY = 0;
+        let currentHeight = 0; 
+        const sheetMaxHeight = window.innerHeight * 0.95;
+        const sheetMidHeight = window.innerHeight * 0.50;
+
+        function openSheet() {
+            sheet.classList.add('active');
+            overlay.classList.add('active');
+            setSheetHeight(sheetMidHeight);
+        }
+
+        function closeSheet() {
+            sheet.classList.remove('active');
+            overlay.classList.remove('active');
+            sheet.style.transform = 'translateY(101%)';
+        }
+
+        function setSheetHeight(height) {
+            currentHeight = height;
+            const translateY = window.innerHeight - height;
+            sheet.style.transform = `translateY(${translateY}px)`;
+        }
+
+        function startDrag(e) {
+            isDragging = true;
+            sheet.classList.add('dragging');
+            startY = e.touches ? e.touches[0].clientY : e.clientY;
+            
+            const matrix = window.getComputedStyle(sheet).transform;
+            if (matrix !== 'none') {
+                const translateY = parseFloat(matrix.split(',')[5]);
+                currentHeight = window.innerHeight - translateY;
+            }
+        }
+
+        function onDrag(e) {
+            if (!isDragging) return;
+            const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+            const deltaY = startY - clientY; 
+            let newHeight = currentHeight + deltaY;
+
+            // Rubber-band эффект при превышении максимума
+            if (newHeight > sheetMaxHeight) {
+                newHeight = sheetMaxHeight + (newHeight - sheetMaxHeight) * 0.2;
+            }
+
+            setSheetHeight(newHeight);
+            startY = clientY;
+        }
+
+        function endDrag() {
+            if (!isDragging) return;
+            isDragging = false;
+            sheet.classList.remove('dragging');
+
+            // Snapping (магнитные точки фиксации)
+            if (currentHeight > (sheetMidHeight + sheetMaxHeight) / 2) {
+                setSheetHeight(sheetMaxHeight);
+            } else if (currentHeight > sheetMidHeight / 2) {
+                setSheetHeight(sheetMidHeight);
+            } else {
+                closeSheet();
+            }
+        }
+
+        openBtn.addEventListener('click', openSheet);
+        overlay.addEventListener('click', closeSheet);
+
+        // Touch события для мобилок
+        dragHandle.addEventListener('touchstart', startDrag, { passive: true });
+        window.addEventListener('touchmove', onDrag, { passive: false });
+        window.addEventListener('touchend', endDrag);
+
+        // Mouse события для десктопа
+        dragHandle.addEventListener('mousedown', startDrag);
+        window.addEventListener('mousemove', onDrag);
+        window.addEventListener('mouseup', endDrag);
+    </script>
 </body>
 </html>

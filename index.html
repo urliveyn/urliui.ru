@@ -3,15 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Monotone Liquid Glass Sheet</title>
+    <title>Monotone UI with Toasts</title>
     <style>
         :root {
             --bg-body: #f2f2f7;
             --bg-sheet: #ffffff;
             --text-main: #000000;
+            --text-invert: #ffffff;
             --text-muted: #8e8e93;
             --switch-off: #e5e5ea;
-            --switch-on: #000000; /* Монотонный активный цвет */
+            --switch-on: #000000;
         }
 
         * {
@@ -38,7 +39,7 @@
 
         .btn-primary {
             background: var(--text-main);
-            color: #ffffff;
+            color: var(--text-invert);
             border: none;
             padding: 16px 32px;
             font-size: 16px;
@@ -67,13 +68,13 @@
             visibility: visible;
         }
 
-        /* BOTTOM SHEET - Однотонный, бордер только сверху */
+        /* BOTTOM SHEET */
         .bottom-sheet {
             position: fixed;
             left: 0; right: 0; bottom: 0;
             height: 95vh;
             background: var(--bg-sheet);
-            border-top: 1px solid rgba(0, 0, 0, 0.15); /* Единственный border */
+            border-top: 1px solid rgba(0, 0, 0, 0.15);
             border-top-left-radius: 24px;
             border-top-right-radius: 24px;
             z-index: 999;
@@ -103,7 +104,6 @@
             cursor: grabbing;
         }
 
-        /* SVG Полоска */
         .drag-svg {
             width: 50px;
             height: 20px;
@@ -140,18 +140,16 @@
             margin-bottom: 32px;
         }
 
-        /* СПИСОК - никаких рамок и фонов */
         .settings-list {
             display: flex;
             flex-direction: column;
-            gap: 24px; /* Просто отступы вместо рамок */
+            gap: 24px;
         }
 
         .settings-item {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            /* Убраны background, padding и border */
         }
 
         .settings-item span {
@@ -171,18 +169,16 @@
             opacity: 0; width: 0; height: 0;
         }
 
-        /* Фон свитчера */
         .liquid-slider {
             position: absolute;
             top: 0; left: 0; right: 0; bottom: 0;
             cursor: pointer;
             background: var(--switch-off);
             border-radius: 34px;
-            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1); /* Внутренняя тень трека */
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
             transition: background 0.4s ease;
         }
 
-        /* Стеклянная капля */
         .liquid-slider:before {
             position: absolute;
             content: "";
@@ -190,24 +186,18 @@
             width: 28px;
             left: 3px;
             bottom: 3px;
-            
-            /* Эффект стекла */
             background: linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.4) 100%);
             backdrop-filter: blur(8px);
             -webkit-backdrop-filter: blur(8px);
             border-radius: 50%;
-            
-            /* Объем: внешняя тень + внутренний свет снизу + внутренний свет сверху */
             box-shadow: 
                 0 4px 8px rgba(0, 0, 0, 0.2),
                 inset 0 -2px 4px rgba(0, 0, 0, 0.05),
                 inset 0 2px 4px rgba(255, 255, 255, 1);
-                
             transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
             z-index: 2;
         }
 
-        /* Жесткий глянцевый блик на стекле */
         .liquid-slider:after {
             position: absolute;
             content: "";
@@ -223,7 +213,6 @@
             pointer-events: none;
         }
 
-        /* Активное состояние */
         input:checked + .liquid-slider {
             background: var(--switch-on);
             box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.5);
@@ -240,6 +229,46 @@
         input:checked + .liquid-slider:after {
             transform: translateX(22px);
         }
+
+        /* TOAST NOTIFICATIONS (Solid Monotone) */
+        .toast-container {
+            position: fixed;
+            top: 24px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: calc(100% - 48px);
+            max-width: 380px;
+            z-index: 10000;
+            pointer-events: none;
+        }
+
+        .toast {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 52px;
+            background: var(--text-main);
+            color: var(--text-invert);
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            padding: 0 16px;
+            gap: 12px;
+            font-size: 15px;
+            font-weight: 500;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+            transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+            pointer-events: auto;
+            cursor: pointer;
+            will-change: transform, opacity;
+        }
+
+        .toast svg {
+            width: 22px;
+            height: 22px;
+            flex-shrink: 0;
+        }
     </style>
 </head>
 <body>
@@ -247,6 +276,8 @@
     <div class="app-container">
         <button id="open-sheet-btn" class="btn-primary">Открыть</button>
     </div>
+
+    <div id="toast-container" class="toast-container"></div>
 
     <div id="sheet-overlay" class="sheet-overlay"></div>
 
@@ -264,14 +295,21 @@
                 <div class="settings-item">
                     <span>Синхронизация</span>
                     <label class="liquid-switch">
-                        <input type="checkbox" checked>
+                        <input type="checkbox" id="sync-switch">
                         <span class="liquid-slider"></span>
                     </label>
                 </div>
                 <div class="settings-item">
                     <span>Локальный сервер</span>
                     <label class="liquid-switch">
-                        <input type="checkbox">
+                        <input type="checkbox" id="local-switch">
+                        <span class="liquid-slider"></span>
+                    </label>
+                </div>
+                <div class="settings-item">
+                    <span>Режим разработчика</span>
+                    <label class="liquid-switch">
+                        <input type="checkbox" id="dev-switch">
                         <span class="liquid-slider"></span>
                     </label>
                 </div>
@@ -280,6 +318,7 @@
     </div>
 
     <script>
+        // --- BOTTOM SHEET ЛОГИКА ---
         const openBtn = document.getElementById('open-sheet-btn');
         const sheet = document.getElementById('bottom-sheet');
         const overlay = document.getElementById('sheet-overlay');
@@ -333,7 +372,6 @@
         function onDrag(e) {
             if (!isDragging) return;
             const clientY = e.touches ? e.touches[0].clientY : e.clientY;
-            
             const deltaY = startY - clientY; 
             let newHeight = currentHeight + deltaY;
 
@@ -343,7 +381,6 @@
             setSheetHeight(newHeight);
             startY = clientY;
 
-            // Изгиб линии
             const totalDeltaY = clientY - initialY;
             let bend = 10 + (totalDeltaY * 0.3);
             bend = Math.max(0, Math.min(20, bend)); 
@@ -372,10 +409,125 @@
         dragHandle.addEventListener('touchstart', startDrag, { passive: true });
         window.addEventListener('touchmove', onDrag, { passive: false });
         window.addEventListener('touchend', endDrag);
-
         dragHandle.addEventListener('mousedown', startDrag);
         window.addEventListener('mousemove', onDrag);
         window.addEventListener('mouseup', endDrag);
+
+        // --- TOAST СИСТЕМА ---
+        const toastContainer = document.getElementById('toast-container');
+        let toasts = [];
+        let isExpanded = false;
+
+        const iconSVG = `
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                <polyline points="22 4 12 14.01 9 11.01"></polyline>
+            </svg>
+        `;
+
+        function showToast(message) {
+            const id = Date.now() + Math.random();
+            const el = document.createElement('div');
+            el.className = 'toast';
+            el.innerHTML = `${iconSVG}<span>${message}</span>`;
+
+            const toastObj = { id, el, timer: null };
+            toastContainer.appendChild(el);
+            toasts.push(toastObj);
+
+            // Начальное состояние для анимации
+            el.style.opacity = '0';
+            el.style.transform = 'translateY(-20px) scale(0.9)';
+            
+            // Форсируем перерисовку
+            void el.offsetWidth;
+
+            el.addEventListener('click', (e) => {
+                e.stopPropagation();
+                if (!isExpanded) {
+                    isExpanded = true;
+                    // При разворачивании отменяем все таймеры
+                    toasts.forEach(t => clearTimeout(t.timer));
+                    renderToasts();
+                } else {
+                    // Клик по развернутому тосту закрывает его
+                    removeToast(id);
+                }
+            });
+
+            if (!isExpanded) {
+                toastObj.timer = setTimeout(() => removeToast(id), 2000);
+            }
+
+            renderToasts();
+        }
+
+        function removeToast(id) {
+            const index = toasts.findIndex(t => t.id === id);
+            if (index > -1) {
+                const t = toasts[index];
+                clearTimeout(t.timer);
+                t.el.style.opacity = '0';
+                t.el.style.transform = 'translateY(-20px) scale(0.9)';
+                setTimeout(() => t.el.remove(), 400); // Ожидание окончания CSS-анимации
+                toasts.splice(index, 1);
+                
+                if (toasts.length === 0) {
+                    isExpanded = false;
+                }
+                renderToasts();
+            }
+        }
+
+        function renderToasts() {
+            const gap = 12;
+            const h = 52; // Высота тоста
+
+            toasts.forEach((t, i) => {
+                // reverseIndex: 0 - самый новый, чем больше, тем старше
+                const rev = toasts.length - 1 - i; 
+
+                if (isExpanded) {
+                    // Развернутый список вниз
+                    t.el.style.transform = `translateY(${rev * (h + gap)}px) scale(1)`;
+                    t.el.style.opacity = '1';
+                    t.el.style.zIndex = toasts.length - rev;
+                } else {
+                    // Стаканный режим (друг за другом с перспективой)
+                    if (rev < 3) {
+                        t.el.style.transform = `translateY(${rev * 10}px) scale(${1 - rev * 0.05})`;
+                        t.el.style.opacity = String(1 - rev * 0.2);
+                    } else {
+                        // Скрываем те, что глубже третьего
+                        t.el.style.transform = `translateY(30px) scale(0.85)`;
+                        t.el.style.opacity = '0';
+                    }
+                    t.el.style.zIndex = i; // Новый всегда поверх старых
+                }
+            });
+        }
+
+        // Если пользователь кликает в любом месте экрана (не на тост),
+        // когда тосты развернуты — сворачиваем их обратно и запускаем таймеры.
+        document.addEventListener('click', () => {
+            if (isExpanded) {
+                isExpanded = false;
+                toasts.forEach(t => {
+                    clearTimeout(t.timer);
+                    t.timer = setTimeout(() => removeToast(t.id), 2000);
+                });
+                renderToasts();
+            }
+        });
+
+        // --- ИНТЕГРАЦИЯ СВИТЧЕРОВ С ТОСТАМИ ---
+        document.querySelectorAll('.liquid-switch input').forEach(input => {
+            input.addEventListener('change', (e) => {
+                const name = e.target.closest('.settings-item').querySelector('span').textContent;
+                const state = e.target.checked ? 'Включено' : 'Выключено';
+                showToast(`${name}: ${state}`);
+            });
+        });
     </script>
 </body>
 </html>
